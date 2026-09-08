@@ -5,6 +5,7 @@
 
 #include "common/Error.hpp"
 #include "data_structures/PriorityQueue.hpp"
+#include "data_structures/graph/Concepts.hpp"
 
 namespace compg {
     template <typename NodeType>
@@ -24,7 +25,14 @@ namespace compg {
 
     class DijkstrasAlgorithm {
     public:
-        template <typename GraphType>
+        /**
+         * @brief Find the shortest path between two nodes in a weighted graph with non-negative weights.
+         * @param graph The graph in which to perform the search.
+         * @param start The node where the search is started.
+         * @param goal The node to find.
+         * @return The path of visited nodes along the shortest path if it exists, otherwise std::nullopt.
+         */
+        template <WeightedGraph GraphType>
         std::optional<std::vector<typename GraphType::node_type>> FindShortestPath(
             const GraphType& graph, const typename GraphType::node_type& start,
             const typename GraphType::node_type& goal
@@ -56,6 +64,7 @@ namespace compg {
                     for (const auto& adjacentNode : graph.GetAdjacentNodes(currentNode)) {
                         if (!predecessor.contains(adjacentNode)) {
                             const auto weight = graph.GetWeight(edge_type{currentNode, adjacentNode});
+                            COMPG_ASSERT(weight >= static_cast<weight_type>(0), "Expected a non-negative edge weight.");
                             queue.Insert(std::tuple{currentNode, adjacentNode, cost + weight});
                         }
                     }
