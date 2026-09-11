@@ -87,12 +87,11 @@ namespace compg {
             return result;
         }
 
-        void
-        TransferFace(const DoublyConnectedEdgeList& edgeList, face_index faceIndex, DoublyConnectedEdgeList& output) {
-            COMPG_ASSERT(edgeList.GetFace(faceIndex).OuterComponent.has_value(), "Expected a bounded face");
-            const auto outerComponent = edgeList.GetFace(faceIndex).OuterComponent.value();
-
-            WalkBoundary(edgeList, outerComponent, [&edgeList, &output](auto edgeIndex) {
+        void TransferBoundary(
+            const DoublyConnectedEdgeList& edgeList, DoublyConnectedEdgeList::edge_index boundaryEdgeIndex,
+            DoublyConnectedEdgeList& output
+        ) {
+            WalkBoundary(edgeList, boundaryEdgeIndex, [&edgeList, &output](auto edgeIndex) {
                 const auto originIndex = edgeList.GetOriginIndex(edgeIndex);
                 const auto origin = edgeList.GetVertex(originIndex).Vertex;
                 const auto destinationIndex = edgeList.GetDestinationIndex(edgeIndex);
@@ -104,7 +103,26 @@ namespace compg {
             });
         }
 
-        DoublyConnectedEdgeList TransferOverlayFaces(
+        void
+        TransferFace(const DoublyConnectedEdgeList& edgeList, face_index faceIndex, DoublyConnectedEdgeList& output) {
+            const auto face = edgeList.GetFace(faceIndex);
+            auto transfer = [&edgeList, &output](auto boundaryEdgeIndex) {
+                TransferBoundary(edgeList, boundaryEdgeIndex, output);
+                return boundaryEdgeIndex;
+            };
+            std::ranges::for_each(face.InnerComponents, transfer);
+            face.OuterComponent.transform(transfer);
+        }
+
+        std::optional<DoublyConnectedEdgeList::edge_index>
+        GetBoundaryEdge(const DoublyConnectedEdgeList::FaceRecord& face) {
+            if (face.OuterComponent) {
+                return face.OuterComponent;
+            }
+            return At(face.InnerComponents, 0);
+        }
+
+        PlaneRegion TransferOverlayFaces(
             const DoublyConnectedEdgeList& edgeList1, const DoublyConnectedEdgeList& edgeList2, auto&& keepFace
         ) {
             const OverlayCalculator calculator;
@@ -112,22 +130,51 @@ namespace compg {
             const auto faceMap = details::FindCorrespondingFaces(overlay, edgeList1, edgeList2);
 
             DoublyConnectedEdgeList result;
+            std::vector<std::tuple<Vertex2D, Vertex2D>> faceEdges;
             for (const auto& [faceIndex, tuple] : faceMap) {
                 const auto& [faceIndex1, faceIndex2] = tuple;
                 if (keepFace(faceIndex1, faceIndex2)) {
                     details::TransferFace(overlay, faceIndex, result);
+
+                    const auto face = overlay.GetFace(faceIndex);
+                    const auto maybeEdgeIndex = GetBoundaryEdge(face);
+                    if (!maybeEdgeIndex.has_value()) {
+                        // the overlay has no edges and the unbounded faces must be kept
+                        DoublyConnectedEdgeList plane{};
+                        return {.EdgeList = plane, .FaceIndices = {plane.FindUnboundedFaceIndex()}};
+                    }
+                    const auto edgeIndex = maybeEdgeIndex.value();
+                    faceEdges.emplace_back(
+                        overlay.GetVertex(overlay.GetOriginIndex(edgeIndex)).Vertex,
+                        overlay.GetVertex(overlay.GetDestinationIndex(edgeIndex)).Vertex
+                    );
                 }
             }
 
             UpdateFaces(result);
-            return result;
+            auto faceIndices = faceEdges | std::views::transform([&result](const auto& vs) {
+                                   const auto& [v0, v1] = vs;
+                                   const auto edgeIndex
+                                       = result.GetEdgeIndex(result.GetVertexIndex(v0), result.GetVertexIndex(v1));
+                                   return result.GetFaceIndex(edgeIndex);
+                               })
+                               | std::ranges::to<decltype(PlaneRegion::FaceIndices)>();
+            return {result, faceIndices};
         }
 
     } // namespace details
 
-    DoublyConnectedEdgeList Union(const DoublyConnectedEdgeList& edgeList1, const DoublyConnectedEdgeList& edgeList2) {
-        // TODO: this is the same as just overlaying them. Return the face indices that are bounded in both input edge
-        // lists.
+    PlaneRegion Union(const PlaneRegion& region1, const PlaneRegion& region2) {
+        COMPG_ASSERT(region1.EdgeList.AreFacesValid(), "Expected the edge list to have valid faces.");
+        COMPG_ASSERT(region2.EdgeList.AreFacesValid(), "Expected the edge list to have valid faces.");
+        auto predicate
+            = [&region1, &region2](
+                  DoublyConnectedEdgeList::face_index faceIndex1, DoublyConnectedEdgeList::face_index faceIndex2
+              ) { return region1.FaceIndices.contains(faceIndex1) || region2.FaceIndices.contains(faceIndex2); };
+        return details::TransferOverlayFaces(region1.EdgeList, region2.EdgeList, predicate);
+    }
+
+    PlaneRegion Union(const DoublyConnectedEdgeList& edgeList1, const DoublyConnectedEdgeList& edgeList2) {
         COMPG_ASSERT(edgeList1.AreFacesValid(), "Expected the edge list to have valid faces.");
         COMPG_ASSERT(edgeList2.AreFacesValid(), "Expected the edge list to have valid faces.");
         auto predicate =
@@ -145,11 +192,20 @@ namespace compg {
             [unboundedFace1 = edgeList1.FindUnboundedFaceIndex(), unboundedFace2 = edgeList2.FindUnboundedFaceIndex()](
                 DoublyConnectedEdgeList::face_index faceIndex1, DoublyConnectedEdgeList::face_index faceIndex2
             ) { return faceIndex1 != unboundedFace1 && faceIndex2 != unboundedFace2; };
-        return details::TransferOverlayFaces(edgeList1, edgeList2, predicate);
+        return details::TransferOverlayFaces(edgeList1, edgeList2, predicate).EdgeList;
     }
 
-    DoublyConnectedEdgeList
-    Difference(const DoublyConnectedEdgeList& edgeList1, const DoublyConnectedEdgeList& edgeList2) {
+    PlaneRegion Intersection(const PlaneRegion& region1, const PlaneRegion& region2) {
+        COMPG_ASSERT(region1.EdgeList.AreFacesValid(), "Expected the edge list to have valid faces.");
+        COMPG_ASSERT(region2.EdgeList.AreFacesValid(), "Expected the edge list to have valid faces.");
+        auto predicate
+            = [&region1, &region2](
+                  DoublyConnectedEdgeList::face_index faceIndex1, DoublyConnectedEdgeList::face_index faceIndex2
+              ) { return region1.FaceIndices.contains(faceIndex1) && region2.FaceIndices.contains(faceIndex2); };
+        return details::TransferOverlayFaces(region1.EdgeList, region2.EdgeList, predicate);
+    }
+
+    PlaneRegion Difference(const DoublyConnectedEdgeList& edgeList1, const DoublyConnectedEdgeList& edgeList2) {
         COMPG_ASSERT(edgeList1.AreFacesValid(), "Expected the edge list to have valid faces.");
         COMPG_ASSERT(edgeList2.AreFacesValid(), "Expected the edge list to have valid faces.");
         auto predicate =
@@ -157,5 +213,15 @@ namespace compg {
                 DoublyConnectedEdgeList::face_index faceIndex1, DoublyConnectedEdgeList::face_index faceIndex2
             ) { return faceIndex1 != unboundedFace1 && faceIndex2 == unboundedFace2; };
         return details::TransferOverlayFaces(edgeList1, edgeList2, predicate);
+    }
+
+    PlaneRegion Difference(const PlaneRegion& region1, const PlaneRegion& region2) {
+        COMPG_ASSERT(region1.EdgeList.AreFacesValid(), "Expected the edge list to have valid faces.");
+        COMPG_ASSERT(region2.EdgeList.AreFacesValid(), "Expected the edge list to have valid faces.");
+        auto predicate
+            = [&region1, &region2](
+                  DoublyConnectedEdgeList::face_index faceIndex1, DoublyConnectedEdgeList::face_index faceIndex2
+              ) { return region1.FaceIndices.contains(faceIndex1) && !region2.FaceIndices.contains(faceIndex2); };
+        return details::TransferOverlayFaces(region1.EdgeList, region2.EdgeList, predicate);
     }
 } // namespace compg

@@ -8,6 +8,10 @@ namespace compg {
     using vertex_index = DoublyConnectedEdgeList::vertex_index;
     using edge_index = DoublyConnectedEdgeList::edge_index;
 
+    DoublyConnectedEdgeList::DoublyConnectedEdgeList()
+        : Faces{FaceRecord{}}
+        , AreFacesValid_{true} {}
+
     vertex_index DoublyConnectedEdgeList::InsertVertex(const Vertex2D& vertex) {
         if (!VertexIndexMap.contains(vertex)) {
             vertex_index vertexIndex{Vertices.size()};

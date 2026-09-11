@@ -14,7 +14,7 @@ TEST_CASE("Boolean operations", "[BooleanOperations]") {
     UpdateFaces(edgeList2);
 
     SECTION("Union") {
-        const auto result = Union(edgeList1, edgeList2);
+        const auto [result, faces] = Union(edgeList1, edgeList2);
         DoublyConnectedEdgeList expected;
         {
             const auto v0 = expected.InsertVertex({0, 0});
@@ -51,7 +51,7 @@ TEST_CASE("Boolean operations", "[BooleanOperations]") {
     }
 
     SECTION("Difference") {
-        const auto result = Difference(edgeList1, edgeList2);
+        const auto [result, faces] = Difference(edgeList1, edgeList2);
         const auto expected = ConvertTo<DoublyConnectedEdgeList>(Polygon{{{0, 0}, {2, 2}, {1, 3}, {2, 4}, {0, 6}}});
 
         CHECK(AreIsomorphic(result, expected));

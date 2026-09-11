@@ -38,6 +38,8 @@ namespace compg {
         };
 
     public:
+        DoublyConnectedEdgeList();
+
         /**
          * @brief Insert a vertex into the edge list. The edge list does not change if the vertex is a duplicate.
          * @param vertex The vertex to insert.
@@ -233,6 +235,6 @@ namespace compg {
 
         std::unordered_map<Vertex2D, vertex_index> VertexIndexMap;
         std::unordered_map<edge_type, edge_index> EdgeIndexMap;
-        bool AreFacesValid_{false};
+        bool AreFacesValid_;
     };
 } // namespace compg
