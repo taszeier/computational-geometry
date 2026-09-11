@@ -123,6 +123,9 @@ namespace compg {
     }
 
     BspTree2D BspCalculator2D::FindLowDensityPartition(const std::vector<LineSegment2D>& segments) const {
+        if (segments.empty()) {
+            return BspTree2D{std::make_unique<BspTreeNode2D>(BspTreeLeafNode2D{})};
+        }
         auto guards = details::FindGuards(segments);
         std::size_t guardThreshold{1};
         bool done = false;
