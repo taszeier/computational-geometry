@@ -65,12 +65,14 @@ namespace compg {
     FreeSpace
     FreeSpaceCalculator::FindFreeSpace(const Box2D& box, const std::vector<Polygon>& polygons, std::size_t seed) const {
         const auto polygonEdges = GetEdges(polygons);
-        const auto edgesBox = FindBoundingBox(polygonEdges);
         COMPG_ASSERT(IsBoxValid(box), "Expected a valid box");
-        COMPG_ASSERT(
-            box.Contains(edgesBox.GetLowerCorner()) && box.Contains(edgesBox.GetUpperCorner()),
-            "The box does not contain the obstacles."
-        );
+        if (!polygonEdges.empty()) {
+            const auto edgesBox = FindBoundingBox(polygonEdges);
+            COMPG_ASSERT(
+                box.Contains(edgesBox.GetLowerCorner()) && box.Contains(edgesBox.GetUpperCorner()),
+                "The box does not contain the obstacles."
+            );
+        }
 
         const auto [boxEdges, collinearEdges] = details::CreateBoxEdges(box, polygonEdges);
 

@@ -43,6 +43,10 @@ namespace compg {
 
             return edgeMap;
         }
+
+        Box2D CreateBoundingBox(const std::vector<LineSegment2D>& segments) {
+            return segments.empty() ? Box2D{{0, 0}, {1, 1}} : Pad(FindBoundingBox(segments), 1.0, 1.0);
+        }
     } // namespace details
 
     PointLocator::PointLocator(const DoublyConnectedEdgeList& edgeList, std::size_t seed)
@@ -51,7 +55,7 @@ namespace compg {
     PointLocator::PointLocator(
         const DoublyConnectedEdgeList& edgeList, const std::vector<LineSegment2D>& segments, std::size_t seed
     )
-        : Map{Pad(FindBoundingBox(segments), 1.0, 1.0)}
+        : Map{details::CreateBoundingBox(segments)}
         , SearchStructure{0}
         , EdgeList{edgeList} {
         EdgeMap = details::FindEdgeMap(edgeList);

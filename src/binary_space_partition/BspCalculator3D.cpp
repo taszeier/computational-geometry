@@ -186,6 +186,10 @@ namespace compg {
     }
 
     BspTree3D BspCalculator3D::FindLowDensityPartition(const std::vector<Triangle3D>& triangles) const {
+        if (triangles.empty()) {
+            return BspTree3D{std::make_unique<BspTreeNode3D>(BspTreeLeafNode3D{})};
+        }
+
         auto guards = details::FindGuards(triangles);
         std::size_t guardThreshold{1};
         bool done = false;
