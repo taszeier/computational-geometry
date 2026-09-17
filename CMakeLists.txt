@@ -18,6 +18,7 @@ set(TEST_NAME                                  "${PROJECT_NAME}_test")
 
 OPTION(BUILD_MAIN                              "Build main"                     ON)
 OPTION(BUILD_TEST                              "Build test"                     ON)
+OPTION(BUILD_DEMOS                             "Build demos"                    ON)
 
 if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "RELEASE version selected.")
@@ -63,3 +64,8 @@ if(BUILD_TEST)
     add_executable(${TEST_NAME} ${TEST_SRC})
     target_link_libraries(${TEST_NAME} PRIVATE Catch2::Catch2WithMain ${LIB_NAME})
 endif(BUILD_TEST)
+
+
+if(BUILD_DEMOS)
+    add_subdirectory(demos)
+endif(BUILD_DEMOS)

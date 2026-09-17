@@ -11,7 +11,13 @@ Requirements:
 - C++23 compiler (Clang 18+, GCC 14+)
 - Eigen
 - Catch2 v3.8.1 (automatically fetched)
+- Qt 6 Widgets (only for the demos)
 
+## Demos
+
+The library includes several demo applications designed to visualize the outcomes of various algorithms, such as:
+
+- Delaunay Triangulation
 ## Notes
 
 This project is a Work in Progress (WIP). Stay tuned for updates!
