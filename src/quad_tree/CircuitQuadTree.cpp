@@ -36,10 +36,19 @@ namespace compg {
 
         bool IntersectsUnitBoxInterior(const CircuitSegment& segment, const Box2D& box) {
             COMPG_ASSERT(IsUnitBox(box), "Expected a unit box");
-            const auto [xMin, xMax] = std::minmax(segment[0][0], segment[1][0]);
-            const auto [yMin, yMax] = std::minmax(segment[0][1], segment[1][1]);
-            return xMin <= box.GetLowerCorner()[0] && box.GetUpperCorner()[0] <= xMax && yMin <= box.GetLowerCorner()[1]
-                   && box.GetUpperCorner()[1] <= yMax;
+
+            if (IsAngle45(segment)) {
+                const CircuitVertex lower{box.GetLowerCorner()[0], box.GetLowerCorner()[1]};
+                const auto [xMin, xMax] = std::minmax(segment[0][0], segment[1][0]);
+                return (segment[0][0] + lower[1] == segment[0][1] + lower[0])
+                    && (xMin <= box.GetLowerCorner()[0] && box.GetUpperCorner()[0] <= xMax);
+            }
+            if (IsAngle135(segment)) {
+                const CircuitVertex upper{box.GetLowerCorner()[0], box.GetUpperCorner()[1]};
+                const auto [xMin, xMax] = std::minmax(segment[0][0], segment[1][0]);
+                return (segment[0][0] + segment[0][1] == upper[0] + upper[1]) && (xMin <= box.GetLowerCorner()[0] && box.GetUpperCorner()[0] <= xMax);
+            }
+            return false;
         }
 
         template <std::ranges::range SegmentRange>
@@ -83,7 +92,7 @@ namespace compg {
 
         Box2D CreateBox(std::size_t power) {
             COMPG_ASSERT(std::numeric_limits<UnsignedInteger>::digits - 1 >= power, "The box is too large.");
-            const UnsignedInteger u = 1 << power;
+            const auto u = static_cast<UnsignedInteger>(1) << power;
             return {{0, 0}, {u, u}};
         }
 
