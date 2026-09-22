@@ -156,8 +156,7 @@ void CircuitQuadTreeWidget::wheelEvent(QWheelEvent* event) {
 }
 
 void CircuitQuadTreeWidget::TryToInsert(const Segment& segment) {
-    const auto result
-        = ValidateCircuitSegment(segment, Segments, static_cast<std::size_t>(Power));
+    const auto result = ValidateCircuitSegment(segment, Segments, static_cast<std::size_t>(Power));
     if (!result.IsValid()) {
         emit messageChanged(QString::fromStdString(result.GetMessage()));
         return;

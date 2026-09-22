@@ -25,7 +25,6 @@ struct CircuitSegmentValidationResult {
 };
 
 [[nodiscard]] CircuitSegmentValidationResult ValidateCircuitSegment(
-    const compg::CircuitSegment::segment_type& candidate,
-    const std::vector<compg::CircuitSegment>& segments,
+    const compg::CircuitSegment::segment_type& candidate, const std::vector<compg::CircuitSegment>& segments,
     std::size_t power
 );
