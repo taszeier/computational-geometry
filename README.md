@@ -10,14 +10,17 @@ Requirements:
 - CMake 3.21+
 - C++23 compiler (Clang 18+, GCC 14+)
 - Eigen
-- Catch2 v3.8.1 (automatically fetched)
-- Qt 6 Widgets (only for the demos)
+- Catch2 v3.8.1 (tests only, automatically fetched)
+- Qt 6 Widgets (demos only)
 
 ## Demos
 
-The library includes several demo applications designed to visualize the outcomes of various algorithms, such as:
+This repository includes several demo applications designed to visualize the results of various algorithms, such as:
 
-- Delaunay Triangulation
+- Delaunay triangulation
+- Voronoi diagrams
+- Quad tree meshes
+
 ## Notes
 
 This project is a Work in Progress (WIP). Stay tuned for updates!
