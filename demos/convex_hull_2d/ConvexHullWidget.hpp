@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "common/Vertex.hpp"
-#include "convex_hull/ConvexHull.hpp"
 #include "convex_hull/AndrewsMonotoneChain.hpp"
+#include "convex_hull/ConvexHull.hpp"
 
 class ConvexHullWidget : public QWidget {
     Q_OBJECT

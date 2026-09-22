@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <ranges>
 
-
 namespace {
     constexpr QSize MinimumWidgetSize{520, 420};
     constexpr double PlotMargin = 32.0;
@@ -26,7 +25,7 @@ namespace {
     constexpr qreal HullPenWidth = 1.5;
     constexpr qreal BorderPenWidth = 1.0;
     constexpr double PointRadius = 3.0;
-}
+} // namespace
 
 ConvexHullWidget::ConvexHullWidget(QWidget* parent)
     : QWidget{parent} {

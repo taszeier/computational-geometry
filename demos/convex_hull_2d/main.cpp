@@ -18,9 +18,7 @@ int main(int argc, char* argv[]) {
     layout->setContentsMargins(12, 12, 12, 12);
     layout->setSpacing(8);
 
-    auto* description = new QLabel{
-        "2D convex hull playground using Andrew's monotone chain algorithm.", content
-    };
+    auto* description = new QLabel{"2D convex hull playground using Andrew's monotone chain algorithm.", content};
     description->setStyleSheet("font-size: 14px; font-weight: 600; color: #1e293b;");
 
     auto* shortcuts = new QLabel{
