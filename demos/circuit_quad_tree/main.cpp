@@ -21,9 +21,8 @@ int main(int argc, char* argv[]) {
     layout->setContentsMargins(12, 12, 12, 12);
     layout->setSpacing(8);
 
-    auto* description = new QLabel{
-        "Circuit quad tree playground: draw integer segments at 0, 45, 90, or 135 degrees.", content
-    };
+    auto* description
+        = new QLabel{"Circuit quad tree playground: draw integer segments at 0, 45, 90, or 135 degrees.", content};
     description->setStyleSheet("font-size: 14px; font-weight: 600; color: #1e293b;");
 
     auto* controls = new QWidget{content};
@@ -41,9 +40,7 @@ int main(int argc, char* argv[]) {
     controlsLayout->addWidget(clearButton);
     controlsLayout->addStretch();
 
-    auto* shortcuts = new QLabel{
-        "Left drag: add segment    Right drag: pan    Wheel: zoom    Ctrl+Q: quit", content
-    };
+    auto* shortcuts = new QLabel{"Left drag: add segment    Right drag: pan    Wheel: zoom    Ctrl+Q: quit", content};
     shortcuts->setStyleSheet("color: #475569;");
 
     auto* canvas = new CircuitQuadTreeWidget{content};
@@ -58,9 +55,10 @@ int main(int argc, char* argv[]) {
     QObject::connect(&quitShortcut, &QShortcut::activated, &application, &QApplication::quit);
     QObject::connect(power, &QSpinBox::valueChanged, canvas, &CircuitQuadTreeWidget::SetPower);
     QObject::connect(clearButton, &QPushButton::clicked, canvas, &CircuitQuadTreeWidget::clear);
-    QObject::connect(canvas, &CircuitQuadTreeWidget::messageChanged, &window, [statusBar = window.statusBar()](const QString& message) {
-        statusBar->showMessage(message);
-    });
+    QObject::connect(
+        canvas, &CircuitQuadTreeWidget::messageChanged, &window,
+        [statusBar = window.statusBar()](const QString& message) { statusBar->showMessage(message); }
+    );
 
     window.resize(860, 720);
     window.show();

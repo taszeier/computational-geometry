@@ -37,10 +37,12 @@ namespace {
     }
 
     bool HasIntersection(const CircuitSegment& s45, const CircuitSegment& s135) {
-        const bool bothSides45 = (s135[0][0] + s45[0][1] > s45[0][0] + s135[0][1] && s45[0][0] + s135[1][1] > s135[1][0] + s45[0][1])
-            || (s135[0][0] + s45[0][1] < s45[0][0] + s135[0][1] && s45[0][0] + s135[1][1] < s135[1][0] + s45[0][1]);
-        const bool bothSides135 = (s45[0][0] + s45[0][1] > s135[0][0] + s135[0][1] && s135[0][0] + s135[0][1] > s45[1][0] + s45[1][1])
-            || (s45[0][0] + s45[0][1] < s135[0][0] + s135[0][1] && s135[0][0] + s135[0][1] < s45[1][0] + s45[1][1]);
+        const bool bothSides45
+            = (s135[0][0] + s45[0][1] > s45[0][0] + s135[0][1] && s45[0][0] + s135[1][1] > s135[1][0] + s45[0][1])
+              || (s135[0][0] + s45[0][1] < s45[0][0] + s135[0][1] && s45[0][0] + s135[1][1] < s135[1][0] + s45[0][1]);
+        const bool bothSides135
+            = (s45[0][0] + s45[0][1] > s135[0][0] + s135[0][1] && s135[0][0] + s135[0][1] > s45[1][0] + s45[1][1])
+              || (s45[0][0] + s45[0][1] < s135[0][0] + s135[0][1] && s135[0][0] + s135[0][1] < s45[1][0] + s45[1][1]);
         return bothSides45 && bothSides135;
     }
 
@@ -75,8 +77,7 @@ std::string CircuitSegmentValidationResult::GetMessage() const {
 }
 
 CircuitSegmentValidationResult ValidateCircuitSegment(
-    const compg::CircuitSegment::segment_type& candidate,
-    const std::vector<compg::CircuitSegment>& segments,
+    const compg::CircuitSegment::segment_type& candidate, const std::vector<compg::CircuitSegment>& segments,
     std::size_t power
 ) {
     const auto upperBound = static_cast<CircuitVertex::Scalar>(1) << power;
