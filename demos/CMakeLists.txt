@@ -31,3 +31,10 @@ add_executable(circuit_quad_tree_demo
 )
 target_link_libraries(circuit_quad_tree_demo PRIVATE Qt6::Widgets)
 target_link_libraries(circuit_quad_tree_demo PRIVATE ${LIB_NAME})
+
+add_executable(kd_tree_2d_demo
+        kd_tree_2d/KdTreeWidget.cpp
+        kd_tree_2d/main.cpp
+)
+target_link_libraries(kd_tree_2d_demo PRIVATE Qt6::Widgets)
+target_link_libraries(kd_tree_2d_demo PRIVATE ${LIB_NAME})

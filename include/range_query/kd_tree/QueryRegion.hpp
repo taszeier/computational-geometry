@@ -9,6 +9,12 @@ namespace compg {
         virtual constexpr bool Contains(const Vertex<K>&) const = 0;
         virtual constexpr bool Covers(const KdTreeRegion<K>&) const = 0;
         virtual constexpr bool Intersects(const KdTreeRegion<K>&) const = 0;
+
+        QueryRegion() = default;
+        QueryRegion(const QueryRegion&) = delete;
+        QueryRegion(QueryRegion&&) = delete;
+        QueryRegion& operator=(const QueryRegion&) = delete;
+        QueryRegion& operator=(QueryRegion&&) = delete;
         virtual ~QueryRegion() = default;
     };
 } // namespace compg
