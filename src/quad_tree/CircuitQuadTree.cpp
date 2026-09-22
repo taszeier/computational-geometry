@@ -41,12 +41,13 @@ namespace compg {
                 const CircuitVertex lower{box.GetLowerCorner()[0], box.GetLowerCorner()[1]};
                 const auto [xMin, xMax] = std::minmax(segment[0][0], segment[1][0]);
                 return (segment[0][0] + lower[1] == segment[0][1] + lower[0])
-                    && (xMin <= box.GetLowerCorner()[0] && box.GetUpperCorner()[0] <= xMax);
+                       && (xMin <= box.GetLowerCorner()[0] && box.GetUpperCorner()[0] <= xMax);
             }
             if (IsAngle135(segment)) {
                 const CircuitVertex upper{box.GetLowerCorner()[0], box.GetUpperCorner()[1]};
                 const auto [xMin, xMax] = std::minmax(segment[0][0], segment[1][0]);
-                return (segment[0][0] + segment[0][1] == upper[0] + upper[1]) && (xMin <= box.GetLowerCorner()[0] && box.GetUpperCorner()[0] <= xMax);
+                return (segment[0][0] + segment[0][1] == upper[0] + upper[1])
+                       && (xMin <= box.GetLowerCorner()[0] && box.GetUpperCorner()[0] <= xMax);
             }
             return false;
         }

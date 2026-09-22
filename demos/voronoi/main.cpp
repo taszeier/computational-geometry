@@ -18,14 +18,11 @@ int main(int argc, char* argv[]) {
     layout->setContentsMargins(12, 12, 12, 12);
     layout->setSpacing(8);
 
-    auto* description = new QLabel{
-        "Voronoi diagram playground: click to add sites and inspect their nearest-site regions.", content
-    };
+    auto* description
+        = new QLabel{"Voronoi diagram playground: click to add sites and inspect their nearest-site regions.", content};
     description->setStyleSheet("font-size: 14px; font-weight: 600; color: #1e293b;");
 
-    auto* shortcuts = new QLabel{
-        "Left click: add site    Ctrl+C: clear    Ctrl+Q: quit", content
-    };
+    auto* shortcuts = new QLabel{"Left click: add site    Ctrl+C: clear    Ctrl+Q: quit", content};
     shortcuts->setStyleSheet("color: #475569;");
 
     auto* canvas = new VoronoiWidget{content};

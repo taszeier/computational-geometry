@@ -5,8 +5,8 @@
 
 #include <algorithm>
 
-#include "math/primitives/Box.hpp"
 #include "data_structures/DoublyConnectedEdgeListAlgorithms.hpp"
+#include "math/primitives/Box.hpp"
 
 namespace {
     constexpr QSize MinimumWidgetSize{520, 420};
@@ -22,7 +22,7 @@ namespace {
     constexpr double DiagramPenWidth = 0.8;
     constexpr double BorderPenWidth = 1.0;
     constexpr double SiteRadius = 3.0;
-}
+} // namespace
 
 VoronoiWidget::VoronoiWidget(QWidget* parent)
     : QWidget{parent} {
