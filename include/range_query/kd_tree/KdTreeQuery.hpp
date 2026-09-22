@@ -45,6 +45,9 @@ namespace compg {
             const pointer_type& node, const KdTreeRegion<K>& treeRegion, const QueryRegion<K>& queryRegion,
             output_container_type& output
         ) const {
+            if (node == nullptr) {
+                return;
+            }
             std::visit(
                 Overloads{
                     [&output, &queryRegion](const KdTreeLeafNode<K>& n) {

@@ -60,7 +60,7 @@ namespace compg {
     public:
         using node_type = KdTreeNode<K>;
         using pointer_type = std::unique_ptr<node_type>;
-
+        KdTree() = default;
         explicit KdTree(const std::vector<Vertex<K>>& vertices) {
             COMPG_ASSERT(!vertices.empty(), "Cannot create a KdTree from zero vertices");
             auto vertexRecords = vertices | std::views::enumerate | std::views::transform([](const auto& tup) {
@@ -76,6 +76,6 @@ namespace compg {
         }
 
     private:
-        pointer_type Root;
+        pointer_type Root = nullptr;
     };
 } // namespace compg
